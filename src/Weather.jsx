@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./styles.css";
 
-// Component: SearchBar - Handles user input and triggers search
+// SearchBar Component
 const SearchBar = ({ onSearch }) => {
   const [city, setCity] = useState("");
 
-  // Function to handle the search button click
   const handleSearch = () => {
     if (city.trim() !== "") {
       onSearch(city);
@@ -28,17 +27,15 @@ const SearchBar = ({ onSearch }) => {
   );
 };
 
-// Component: WeatherCard - Displays weather information
-const WeatherCard = ({ title, data }) => {
-  return (
-    <div className="weather-card">
-      <h3>{title}</h3>
-      <p>{data}</p>
-    </div>
-  );
-};
+// WeatherCard Component
+const WeatherCard = ({ title, data }) => (
+  <div className="weather-card">
+    <h3>{title}</h3>
+    <p>{data}</p>
+  </div>
+);
 
-// Component: WeatherDisplay - Fetches and displays weather data
+// WeatherDisplay Component
 const WeatherDisplay = ({ city }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -48,17 +45,19 @@ const WeatherDisplay = ({ city }) => {
     if (city) {
       setLoading(true);
       setError("");
+      setWeatherData(null); // Reset previous data
+
       axios
         .get(`https://api.weatherapi.com/v1/current.json`, {
           params: {
-            key: process.env.REACT_APP_WEATHER_API_KEY, // Use an environment variable for security
-            q: city
-          }
+            key: process.env.REACT_APP_WEATHER_API_KEY,
+            q: city,
+          },
         })
         .then((response) => {
           setWeatherData(response.data);
         })
-        .catch((error) => {
+        .catch(() => {
           setError("Failed to fetch weather data. Please check the city name.");
         })
         .finally(() => {
@@ -83,19 +82,14 @@ const WeatherDisplay = ({ city }) => {
   );
 };
 
-// Component: Weather - Main component that combines search and display
+// Main Weather Component
 function Weather() {
   const [city, setCity] = useState("");
-
-  // Function to handle search from SearchBar component
-  const handleSearch = (searchCity) => {
-    setCity(searchCity);
-  };
 
   return (
     <div className="Weather">
       <h1>Weather App</h1>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onSearch={setCity} />
       <WeatherDisplay city={city} />
     </div>
   );
